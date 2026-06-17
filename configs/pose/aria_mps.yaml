@@ -1,0 +1,7 @@
+# Project Aria MPS pose (no SLAM). Reads closed_loop_trajectory / online_calibration
+# / semidense_points / general_eye_gaze. Pure-python parsing (no GPU).
+family: pose
+name: aria_mps
+enabled: true
+params:
+  mps_dir: null    # path to the MPS output folder for this VRS

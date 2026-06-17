@@ -1,0 +1,8 @@
+# LeRobotDataset export (imitation learning). Needs `pip install lerobot`.
+family: export
+name: lerobot
+enabled: true
+params:
+  repo_id: ego2dex/episode
+  hand_side: right
+  language: manipulation

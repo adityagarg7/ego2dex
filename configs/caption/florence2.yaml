@@ -1,0 +1,7 @@
+# Florence-2 (MIT). Tiny, fast, local. Captions / region captions / OV-det / ref-seg.
+family: caption
+name: florence2
+enabled: true
+params:
+  model_id: microsoft/Florence-2-large
+  max_new_tokens: 256

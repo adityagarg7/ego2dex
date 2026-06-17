@@ -1,0 +1,8 @@
+# Retarget onto the Allegro hand (16 DOF). Uses dex-retargeting's bundled config/URDF.
+family: retarget
+name: dex_retargeting
+enabled: true
+params:
+  robot: allegro
+  hand_side: right
+  retargeting_type: vector     # AnyTeleop-style for Allegro

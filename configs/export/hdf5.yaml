@@ -1,0 +1,7 @@
+# EgoDex-style HDF5 (imitation / retargeted-action). Needs h5py ([export] extra).
+family: export
+name: hdf5
+enabled: true
+params:
+  filename: episode.hdf5
+  language: null        # task string; defaults to action segments / captions

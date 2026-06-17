@@ -1,0 +1,17 @@
+# Retarget recovered hand motion onto the ORCA hand (16 active DOF).
+# dex-retargeting (MIT). URDF is USER-SUPPLIED (orca_sim / orcahand assets).
+# Set urdf_path or the EGO2DEX_ORCA_URDF env var. Verify the link names against
+# your URDF (<link name="...">) and override here if they differ.
+family: retarget
+name: dex_retargeting
+enabled: true
+params:
+  robot: orca
+  hand_side: both              # both | left | right
+  retargeting_type: position   # position | vector | dexpilot
+  urdf_path: null              # e.g. ${EGO2DEX_ORCA_URDF} or orca_sim/.../orcahand.urdf
+  # Optional link-name overrides (defaults in retarget/robots.py::orca_config):
+  finger_tip_link_names: ["thumb_tip", "index_tip", "middle_tip", "ring_tip", "pinky_tip"]
+  wrist_link_name: palm
+  scaling_factor: 1.0
+  low_pass_alpha: 0.2

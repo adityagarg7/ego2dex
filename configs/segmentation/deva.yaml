@@ -1,0 +1,7 @@
+# DEVA (ICCV 2023). Open-world long-clip multi-object ID consistency. GPLv3.
+family: segmentation
+name: deva
+enabled: true
+params:
+  detection_every: 5
+  max_num_objects: 20

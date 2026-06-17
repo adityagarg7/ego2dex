@@ -1,0 +1,8 @@
+# RAM++ (Apache-2.0). Open-set image tagging; tags double as GDINO auto-prompts.
+# Runs BEFORE detection so its tags become the open-vocab prompt.
+family: caption
+name: ram_plus
+enabled: true
+params:
+  checkpoint: null       # ram_plus_swin_large_14m.pth
+  image_size: 384

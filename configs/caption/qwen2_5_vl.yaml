@@ -1,0 +1,8 @@
+# Qwen2.5-VL (arXiv:2502.13923). PRIMARY VLM (Apache-2.0, 3B/7B). Captions + actions.
+family: caption
+name: qwen2_5_vl
+enabled: true
+params:
+  model_id: Qwen/Qwen2.5-VL-7B-Instruct
+  device_map: auto
+  max_new_tokens: 128

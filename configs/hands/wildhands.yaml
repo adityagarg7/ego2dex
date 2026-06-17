@@ -1,0 +1,8 @@
+# WildHands (ECCV 2024). Egocentric-specialized single image. CC-BY-NC + MANO.
+# Uses camera intrinsics in the keypoint head (pass per-frame K).
+family: hands
+name: wildhands
+enabled: true
+params:
+  num_hands: 2
+  device: cuda

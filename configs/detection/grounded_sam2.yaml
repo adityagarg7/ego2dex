@@ -1,0 +1,12 @@
+# Grounded-SAM-2: text -> GDINO boxes -> SAM2 masks -> tracked IDs (Apache-2.0).
+# The recommended detect+segment+track chain; populates detections + masks + tracks.
+family: detection
+name: grounded_sam2
+enabled: true
+params:
+  classes: null              # null -> use RAM++ tags as prompt
+  box_threshold: 0.3
+  text_threshold: 0.25
+  model_id: IDEA-Research/grounding-dino-base
+  model_cfg: configs/sam2.1/sam2.1_hiera_l.yaml   # SAM2's own config name
+  checkpoint: null           # path to sam2.1_hiera_large.pt

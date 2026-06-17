@@ -1,0 +1,8 @@
+# SAM 2 (Apache-2.0). Box/point -> mask + streaming-memory video propagation.
+# Consumes detection boxes on each frame; emits Mask(instance_id) + tracks.
+family: segmentation
+name: sam2
+enabled: true
+params:
+  model_cfg: configs/sam2.1/sam2.1_hiera_l.yaml
+  checkpoint: null     # path to sam2.1_hiera_large.pt

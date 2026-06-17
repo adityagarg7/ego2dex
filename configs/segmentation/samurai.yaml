@@ -1,0 +1,8 @@
+# SAMURAI (Apache-2.0). Motion-aware SAM2 for robust single-object tracking
+# under fast egocentric motion / occlusion.
+family: segmentation
+name: samurai
+enabled: true
+params:
+  checkpoint: null      # sam2.1 checkpoint
+  model_cfg: configs/sam2.1/sam2.1_hiera_l.yaml

@@ -1,0 +1,8 @@
+# Retarget onto the Shadow hand (24 DOF). dex-retargeting bundled config/URDF.
+family: retarget
+name: dex_retargeting
+enabled: true
+params:
+  robot: shadow
+  hand_side: right
+  retargeting_type: dexpilot   # precise pinching

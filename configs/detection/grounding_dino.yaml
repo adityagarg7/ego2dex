@@ -1,0 +1,11 @@
+# Grounding DINO (ECCV 2024). PRIMARY open-vocab detector. Apache-2.0.
+family: detection
+name: grounding_dino
+enabled: true
+params:
+  model_id: IDEA-Research/grounding-dino-base
+  box_threshold: 0.3
+  text_threshold: 0.25
+  # Open-vocab classes. If null, RAM++ tags (if present) are used as the prompt,
+  # else a default ["hand","object"].
+  classes: null

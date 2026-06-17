@@ -1,0 +1,7 @@
+# Molmo (Apache-2.0). Pointing -> contact / affordance points (Caption.points).
+family: caption
+name: molmo
+enabled: true
+params:
+  model_id: allenai/Molmo-7B-D-0924
+  query: "Point to where the hand is contacting the object."

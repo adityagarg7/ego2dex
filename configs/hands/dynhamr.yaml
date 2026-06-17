@@ -1,0 +1,9 @@
+# Dyn-HaMR (CVPR 2025). Temporal, world-frame, moving-camera, two-hand.
+# MIT code + MANO. Clip-level offline optimization (SLAM + HaMeR/WiLoR + prior).
+family: hands
+name: dynhamr
+enabled: true
+params:
+  num_hands: 2
+  slam: vipe          # vipe | droid
+  device: cuda

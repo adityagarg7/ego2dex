@@ -1,0 +1,29 @@
+# Smoke pipeline: CPU, NO weights, NO GPU, NO network.
+#
+# Runs the whole graph end-to-end on a tiny synthetic clip using the dry-run
+# path (deterministic synthetic outputs). This is what `pixi run smoke` /
+# `make smoke` exercise. Flip run.dry_run -> false and install the relevant
+# extras + weights to do a real CPU run (e.g. mediapipe + hand_landmarker.task).
+name: smoke
+description: "MediaPipe-only CPU smoke test (dry-run, no weights)."
+
+io:
+  sample_fps: null
+  max_frames: 8
+  source: generic
+  undistort: false
+
+run:
+  device: cpu
+  dry_run: true        # synthetic outputs; no model weights required
+  strict: false
+  output_dir: outputs/smoke
+
+mano:
+  model_dir: null
+
+stages:
+  - include: configs/hands/mediapipe.yaml
+  - { family: hands, name: smoothing, params: { method: oneeuro, beta: 0.3 } }
+  - include: configs/export/json.yaml
+  - include: configs/export/coco.yaml

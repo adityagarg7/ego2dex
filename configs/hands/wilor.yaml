@@ -1,0 +1,8 @@
+# WiLoR (real-time, multi-hand). Models CC-BY-NC-ND + AGPL detector + MANO.
+# Install: pip install git+https://github.com/warmshao/WiLoR-mini
+family: hands
+name: wilor
+enabled: true
+params:
+  num_hands: 2
+  device: cuda

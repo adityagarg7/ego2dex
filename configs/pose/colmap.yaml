@@ -1,0 +1,6 @@
+# COLMAP offline SfM (BSD). Recovers GoPro intrinsics + per-frame extrinsics.
+family: pose
+name: colmap
+enabled: true
+params:
+  sparse_dir: null   # prebuilt model dir (cameras.bin, images.bin)

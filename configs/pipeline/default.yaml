@@ -1,0 +1,45 @@
+# Default FULL GoPro pipeline (the SOTA stack). LIVE run -> needs GPU + weights
+# (install via scripts/install_models.sh). Stages whose deps are missing are
+# skipped with a warning unless run.strict=true. Set run.dry_run=true to trace
+# the whole graph on CPU with synthetic outputs.
+name: gopro_default
+description: "Full GoPro egocentric -> dexterous-hand annotation + ORCA retargeting."
+
+io:
+  sample_fps: 10           # keyframe sampling
+  max_frames: null
+  source: gopro
+  undistort: true          # GoPro is wide-FOV; rectify to pinhole
+
+run:
+  device: cuda
+  dry_run: false
+  strict: false
+  output_dir: outputs/gopro
+
+mano:
+  model_dir: null          # USER-SUPPLIED MANO_RIGHT.pkl / MANO_LEFT.pkl directory
+
+stages:
+  # --- camera / SLAM (GoPro has no MPS) ---
+  - include: configs/pose/colmap.yaml
+  # --- tags (feed detection prompts) ---
+  - include: configs/caption/ram_plus.yaml
+  # --- open-vocab detect + segment + track ---
+  - include: configs/detection/grounded_sam2.yaml
+  # --- 3D hands (HaMeR) + temporal smoothing ---
+  - include: configs/hands/hamer.yaml
+  - { family: hands, name: smoothing, params: { method: oneeuro } }
+  # --- hand-object interaction ---
+  - include: configs/hoi/hand_object_detector.yaml
+  # --- captions + pointing ---
+  - include: configs/caption/qwen2_5_vl.yaml
+  - include: configs/caption/molmo.yaml
+  # --- retarget onto ORCA (16 DOF) ---
+  - include: configs/retarget/orca.yaml
+  # --- export (both pretraining pathways) ---
+  - include: configs/export/json.yaml
+  - include: configs/export/coco.yaml
+  - include: configs/export/hdf5.yaml
+  # --- visualization ---
+  - { family: viz, name: overlay }

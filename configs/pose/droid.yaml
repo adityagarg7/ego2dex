@@ -1,0 +1,8 @@
+# DROID-SLAM (research). Deep visual SLAM for moving-camera GoPro clips.
+# Also the SLAM front-end option for Dyn-HaMR (alongside VIPE).
+family: pose
+name: droid
+enabled: true
+params:
+  stride: 2
+  weights: null

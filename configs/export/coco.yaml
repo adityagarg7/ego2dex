@@ -1,0 +1,7 @@
+# COCO export: images/annotations/categories, keypoints [x,y,v], RLE masks.
+family: export
+name: coco
+enabled: true
+params:
+  filename: annotations.coco.json
+  pretty: true

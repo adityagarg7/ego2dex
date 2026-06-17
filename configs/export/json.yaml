@@ -1,0 +1,9 @@
+# Native ego2dex JSON: one JSON per frame + clip manifest + JSON Schema.
+family: export
+name: json
+enabled: true
+params:
+  pretty: true
+  single_file: true     # also write clip_full.json
+  write_schema: true
+  output_dir: null      # default: pipeline output dir

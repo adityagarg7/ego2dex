@@ -1,0 +1,9 @@
+# 100DOH hand_object_detector (CVPR 2020). Research-only license.
+# Per hand: box, side (L/R), 5-class contact state, held-object box.
+family: hoi
+name: hand_object_detector
+enabled: true
+params:
+  thresh_hand: 0.5
+  thresh_obj: 0.5
+  checkpoint: null    # faster_rcnn res101 handobj_100K weights

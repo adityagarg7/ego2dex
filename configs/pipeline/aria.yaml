@@ -1,0 +1,38 @@
+# Project Aria pipeline. Uses MPS for camera pose (no SLAM) + Fisheye624 calib.
+# Provide RGB frames (extracted from the .vrs stream 214-1) as the --input dir,
+# and the MPS folder via the aria_mps stage's params.mps_dir.
+name: aria_default
+description: "Project Aria egocentric -> dexterous-hand annotation + ORCA retargeting."
+
+io:
+  sample_fps: 10
+  max_frames: null
+  source: aria
+  undistort: false         # keep Aria Fisheye624; project points with the model
+
+run:
+  device: cuda
+  dry_run: false
+  strict: false
+  output_dir: outputs/aria
+
+mano:
+  model_dir: null
+
+stages:
+  # --- Aria MPS: camera calib (Fisheye624) + world->cam pose + gaze ---
+  - { include: configs/pose/aria_mps.yaml, params: { mps_dir: null } }
+  # --- tags / detection / segmentation ---
+  - include: configs/caption/ram_plus.yaml
+  - include: configs/detection/grounded_sam2.yaml
+  # --- 3D hands + smoothing ---
+  - include: configs/hands/hamer.yaml
+  - { family: hands, name: smoothing, params: { method: oneeuro } }
+  # --- interaction + captions ---
+  - include: configs/hoi/egohos.yaml
+  - include: configs/caption/qwen2_5_vl.yaml
+  # --- retarget + export ---
+  - include: configs/retarget/orca.yaml
+  - include: configs/export/json.yaml
+  - include: configs/export/hdf5.yaml
+  - { family: viz, name: overlay }

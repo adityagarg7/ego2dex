@@ -1,0 +1,10 @@
+# HaMeR (CVPR 2024). PRIMARY hand model. MIT code + MANO non-commercial weights.
+# Install: pip install -e '.[hamer]' + clone hamer + bash fetch_demo_data.sh
+family: hands
+name: hamer
+enabled: true
+params:
+  num_hands: 2
+  checkpoint: null   # e.g. _DATA/hamer_ckpts/checkpoints/hamer.ckpt
+  device: cuda
+  focal_length: 5000.0

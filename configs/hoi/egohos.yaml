@@ -1,0 +1,8 @@
+# EgoHOS (ECCV 2022). MIT. Pixel masks of hands + interacted objects + contact
+# boundaries (egocentric). Stored as HandObjectInteraction.contact_mask (RLE).
+family: hoi
+name: egohos
+enabled: true
+params:
+  config: null        # mmsegmentation config
+  checkpoint: null

@@ -1,0 +1,8 @@
+# Detic (21k-class, box + mask). Apache-2.0. detectron2-based.
+family: detection
+name: detic
+enabled: true
+params:
+  vocabulary: lvis     # lvis | custom
+  custom_classes: null
+  confidence_threshold: 0.3
