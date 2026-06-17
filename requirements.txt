@@ -1,0 +1,26 @@
+# ---------------------------------------------------------------------------
+# ego2dex - pip/Colab requirements (CORE only; light, CPU, no model weights)
+#
+# This installs the package so it IMPORTS and the pipeline graph runs in
+# dry-run mode. Heavy models are optional extras -- install per stage, e.g.:
+#
+#     pip install ".[mediapipe]"            # CPU smoke path (21 kpts, no MANO)
+#     pip install ".[hamer]"                # HaMeR (GPU, MANO, needs weights)
+#     pip install ".[detection,sam2]"       # Grounded-SAM-2 chain
+#     pip install ".[retarget,export]"      # dex-retargeting + HDF5/LeRobot
+#
+# Keep this list in sync with the CORE `dependencies` block in pyproject.toml
+# and with pixi.toml. See docs/install.md.
+# ---------------------------------------------------------------------------
+numpy>=1.24
+opencv-python-headless>=4.8
+pillow>=9.5
+omegaconf>=2.3
+hydra-core>=1.3
+pydantic>=2.5
+typer>=0.9
+rich>=13.0
+tqdm>=4.65
+pyyaml>=6.0
+pycocotools>=2.0.6
+jsonschema>=4.0

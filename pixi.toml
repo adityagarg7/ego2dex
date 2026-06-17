@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------
+# ego2dex - pixi project file (preferred env manager; mirrors the user's
+# pixi-managed `fv-orca-hand-rl` / `orca_sim` repos).
+#
+# `pixi install`            -> core, light, CPU-only env (imports + dry-run)
+# `pixi run smoke`          -> CPU mediapipe pipeline on the synthetic clip
+# `pixi run test`           -> pytest -m "not requires_models"
+# `pixi run lint` / `fmt`   -> ruff
+#
+# Heavy/GPU stacks live in named features so CI / Colab never pull multi-GB
+# weights. Keep dep lists in sync with pyproject.toml + requirements.txt.
+# ---------------------------------------------------------------------------
+[project]
+name = "ego2dex"
+version = "0.1.0"
+description = "Egocentric video -> dexterous-hand annotations & retargeting."
+authors = ["Aditya Garg"]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
+
+[dependencies]
+python = ">=3.10,<3.13"
+numpy = ">=1.24"
+pillow = ">=9.5"
+pyyaml = ">=6.0"
+tqdm = ">=4.65"
+rich = ">=13.0"
+
+[pypi-dependencies]
+ego2dex = { path = ".", editable = true }
+
+[tasks]
+smoke = "ego2dex run --config configs/pipeline/smoke.yaml --input assets/synthetic --output outputs/smoke"
+test = "pytest -m 'not requires_models'"
+test-all = "pytest"
+lint = "ruff check src tests"
+fmt = "ruff format src tests"
+fmt-check = "ruff format --check src tests"
+typecheck = "mypy src || true"
+info = "ego2dex info"
+validate = "ego2dex validate --config configs/pipeline/default.yaml"
+
+# --- Optional features (opt in: `pixi install -e dev`, etc.) ----------------
+[feature.dev.pypi-dependencies]
+ruff = ">=0.4"
+mypy = ">=1.8"
+pytest = ">=7.4"
+pre-commit = ">=3.5"
+
+[feature.mediapipe.pypi-dependencies]
+mediapipe = ">=0.10"
+
+[feature.retarget.pypi-dependencies]
+dex-retargeting = ">=0.4.0"
+
+[feature.export.pypi-dependencies]
+h5py = ">=3.8"
+pyarrow = ">=14.0"
+
+# GPU model stacks (hamer/wilor/detection/sam2/caption/...) are deliberately
+# NOT declared here; install them from source via scripts/install_models.sh
+# inside a GPU env. See docs/install.md.
+
+[environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+smoke = { features = ["mediapipe"], solve-group = "default" }

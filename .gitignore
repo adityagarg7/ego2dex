@@ -1,0 +1,93 @@
+# ---------------------------------------------------------------------------
+# ego2dex .gitignore
+#
+# HARD RULE: code lives in git, *artifacts* never do.
+# Never commit model weights, datasets, raw videos, extracted frames, or
+# generated annotation outputs. They are large, often non-redistributable
+# (see docs/licenses.md), and reproducible from code + the install scripts.
+# ---------------------------------------------------------------------------
+
+# --- Model weights / checkpoints (downloaded via scripts/install_models.sh) ---
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.bin
+*.h5
+*.hdf5
+*.tflite
+*.pkl
+*.npz
+checkpoints/
+weights/
+_DATA/
+models_cache/
+.cache/
+
+# MANO models are GATED + non-commercial: user supplies their own. Never vendor.
+MANO_*.pkl
+mano_v*/
+*.MANO
+
+# --- Datasets / raw inputs ---
+data/
+datasets/
+*.vrs
+*.insv
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# --- Extracted frames / generated annotations / exports ---
+frames/
+outputs/
+output/
+runs/
+exports/
+*.coco.json
+annotations_out/
+*.webdataset
+*.tar
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+.installed.cfg
+pip-wheel-metadata/
+
+# --- Virtual envs / package managers ---
+.venv/
+venv/
+env/
+.env
+.pixi/
+pixi.lock
+
+# --- Tooling caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.hypothesis/
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# Keep tiny synthetic test assets that are explicitly whitelisted.
+!assets/**

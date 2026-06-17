@@ -1,0 +1,169 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ego2dex"
+dynamic = ["version"]
+description = "Egocentric video -> SOTA hand/object/interaction annotations -> dexterous-hand retargeting & training exports."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Aditya Garg" }]
+keywords = [
+    "egocentric",
+    "hand-pose",
+    "MANO",
+    "dexterous-manipulation",
+    "retargeting",
+    "robot-learning",
+    "annotation",
+    "computer-vision",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# ---------------------------------------------------------------------------
+# CORE dependencies are intentionally LIGHT. The package must import, and the
+# whole pipeline graph must run in "dry-run" mode, with NO GPU and NO model
+# weights. Every heavy model is an optional extra, imported lazily inside the
+# stage that uses it. Keep this list in sync with requirements.txt + pixi.toml.
+# ---------------------------------------------------------------------------
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python-headless>=4.8",  # headless: no libGL needed in CI; viz writes files
+    "pillow>=9.5",
+    "omegaconf>=2.3",
+    "hydra-core>=1.3",
+    "pydantic>=2.5",
+    "typer>=0.9",
+    "rich>=13.0",
+    "tqdm>=4.65",
+    "pyyaml>=6.0",
+    "pycocotools>=2.0.6",  # COCO RLE encode/decode (light, pure CPU); pure-python fallback exists
+    "jsonschema>=4.0",     # validate ego2dex JSON against the shipped JSON Schema
+]
+
+[project.optional-dependencies]
+# --- Hand pose backbones (each pulls torch; pick what you need) -------------
+hamer = ["torch>=2.0", "torchvision", "timm", "einops", "smplx>=0.1.28", "chumpy"]
+wilor = ["torch>=2.0", "torchvision", "ultralytics", "smplx>=0.1.28", "huggingface-hub"]
+mediapipe = ["mediapipe>=0.10"]  # CPU, no MANO, no torch -> the smoke path
+dynhamr = ["torch>=2.0", "torchvision", "smplx>=0.1.28"]
+wildhands = ["torch>=2.0", "torchvision", "smplx>=0.1.28"]
+smoothing = ["scipy>=1.10"]  # SmoothNet (torch) optional; 1euro is pure-python
+
+# --- Open-vocab detection / segmentation / tracking ------------------------
+detection = ["torch>=2.0", "torchvision", "transformers>=4.40", "supervision>=0.18"]
+sam2 = ["torch>=2.0", "torchvision"]  # plus: pip install git+https://github.com/facebookresearch/sam2
+deva = ["torch>=2.0", "torchvision"]
+samurai = ["torch>=2.0", "torchvision"]
+
+# --- Hand-object interaction -----------------------------------------------
+hoi = ["torch>=2.0", "torchvision"]
+
+# --- Captioning / tagging VLMs ---------------------------------------------
+caption = ["torch>=2.0", "transformers>=4.49", "accelerate", "qwen-vl-utils", "einops"]
+
+# --- Camera pose / SLAM -----------------------------------------------------
+pose = ["scipy>=1.10"]  # COLMAP is a system binary; DROID/VIPE installed from source
+
+# --- Project Aria ingestion -------------------------------------------------
+aria = ["projectaria-tools>=1.5"]
+
+# --- Retargeting (human hand -> robot joints) ------------------------------
+retarget = ["dex-retargeting>=0.4.0"]  # pulls pinocchio + nlopt
+
+# --- Training-data export writers ------------------------------------------
+export = ["h5py>=3.8", "pyarrow>=14.0"]  # + optional: lerobot
+lerobot = ["lerobot"]
+
+# --- Visualization ----------------------------------------------------------
+viz = ["matplotlib>=3.7"]
+
+# --- Dev / CI ---------------------------------------------------------------
+dev = [
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "pytest>=7.4",
+    "pytest-cov",
+    "pre-commit>=3.5",
+    "types-PyYAML",
+    "types-tqdm",
+]
+
+# Convenience meta-extra: the full GPU stack (NOT installed in CI).
+all = [
+    "ego2dex[hamer,wilor,mediapipe,dynhamr,wildhands,smoothing,detection,sam2,deva,samurai,hoi,caption,pose,aria,retarget,export,viz]",
+]
+
+[project.scripts]
+ego2dex = "ego2dex.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/adityagarg7/ego2dex"
+Documentation = "https://github.com/adityagarg7/ego2dex/tree/main/docs"
+Issues = "https://github.com/adityagarg7/ego2dex/issues"
+
+[tool.hatch.version]
+path = "src/ego2dex/version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ego2dex"]
+
+# ---------------------------------------------------------------------------
+# Tooling
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+extend-exclude = [".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
+ignore = [
+    "B008",   # typer uses function calls in argument defaults by design
+    "C901",   # allow complex functions in wrappers
+    "RUF012", # mutable class attrs without ClassVar (pydantic models)
+    "RUF005", # explicit list concatenation is clearer for tiny coeff padding
+    "RUF022", # __all__ is grouped by tier intentionally, not alphabetized
+    "RUF046", # defensive int() casts guard against numpy scalar types
+    "B027",   # Stage.load/teardown are intentional overridable no-op hooks
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # re-exports
+"tests/*" = ["B", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ego2dex"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+ignore_missing_imports = true   # heavy optional deps are not installed in CI
+follow_imports = "silent"
+no_implicit_optional = true
+# Non-blocking in CI: we run mypy with `|| true` in the Makefile / workflow.
+
+[[tool.mypy.overrides]]
+module = ["ego2dex.stages.*", "ego2dex.retarget.*", "ego2dex.export.*"]
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra -q"
+markers = [
+    "requires_models: tests that need real model weights and/or a GPU (skipped in CI via -m 'not requires_models')",
+    "requires_torch: tests that need a torch install",
+    "slow: long-running tests",
+]
