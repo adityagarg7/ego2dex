@@ -43,6 +43,10 @@ class Florence2(CaptionStageBase):
     def _run_task(self, pil, task: str, text: str = ""):  # pragma: no cover - needs weights
         prompt = task + text
         inputs = self._processor(text=prompt, images=pil, return_tensors="pt").to(self.device)
+        
+        if "pixel_values" in inputs:
+            inputs["pixel_values"] = inputs["pixel_values"].to(self._model.dtype)
+            
         gen = self._model.generate(
             input_ids=inputs["input_ids"],
             pixel_values=inputs["pixel_values"],
@@ -58,10 +62,17 @@ class Florence2(CaptionStageBase):
     def infer(self, image: np.ndarray, fa: FrameAnnotation) -> Caption:  # pragma: no cover
         import cv2
         from PIL import Image
+        from ...schema.core import Tags
 
         pil = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-        cap = self._run_task(pil, "<DETAILED_CAPTION>")
+        
+        od_res = self._run_task(pil, "<OD>")
+        labels = od_res.get("<OD>", {}).get("labels", [])
+        
+        unique_tags = list(set([str(l).strip().lower() for l in labels]))
+        
+        fa.tags = Tags(tags=unique_tags, source="florence2_od")
         return Caption(
-            frame_caption=cap.get("<DETAILED_CAPTION>", ""),
+            frame_caption="Auto-tagged by Florence-2",
             source="florence2",
         )

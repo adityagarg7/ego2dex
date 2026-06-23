@@ -1,0 +1,47 @@
+name: colab_epic_florence_full
+description: "Full video pipeline using Florence-2 Auto-Tagger and 5 FPS sampling."
+
+io:
+  sample_fps: 5
+  start_sec: 0.0
+  source: default
+  undistort: false
+
+run:
+  device: cuda
+  dry_run: false
+  strict: true
+  output_dir: /content/outputs/florence_run
+
+mano:
+  model_dir: null
+
+stages:
+  - family: hands
+    name: mediapipe
+    enabled: true
+    params:
+      model_path: /content/_DATA/hand_landmarker.task
+  - { family: hands, name: smoothing, params: { method: oneeuro } }
+
+  - family: caption
+    name: florence2
+    enabled: true
+
+  - family: detection
+    name: grounding_dino
+    enabled: true
+    params:
+      classes: null
+      box_threshold: 0.35
+      text_threshold: 0.25
+
+  - family: segmentation
+    name: sam2
+    enabled: true
+    params:
+      checkpoint: /content/_DATA/sam2.1_hiera_large.pt
+
+  - include: configs/export/json.yaml
+  - include: configs/export/coco.yaml
+  - { family: viz, name: overlay }
