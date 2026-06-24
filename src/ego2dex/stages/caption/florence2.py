@@ -66,13 +66,17 @@ class Florence2(CaptionStageBase):
 
         pil = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         
+        # 1. Get the object tags
         od_res = self._run_task(pil, "<OD>")
         labels = od_res.get("<OD>", {}).get("labels", [])
-        
         unique_tags = list(set([str(l).strip().lower() for l in labels]))
-        
         fa.tags = Tags(tags=unique_tags, source="florence2_od")
+        
+        # 2. Get the detailed sentence caption
+        cap_res = self._run_task(pil, "<DETAILED_CAPTION>")
+        caption_text = cap_res.get("<DETAILED_CAPTION>", "Auto-tagged by Florence-2")
+
         return Caption(
-            frame_caption="Auto-tagged by Florence-2",
+            frame_caption=caption_text,
             source="florence2",
         )
