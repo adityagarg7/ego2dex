@@ -1,0 +1,44 @@
+name: local_epic_manual_300
+description: "Local test pipeline using Manual Classes limited to 300 frames."
+
+io:
+  sample_fps: 5
+  start_sec: 0.0
+  max_frames: 300            # HARD LIMIT: Stops exactly at 300 frames
+  source: default
+  undistort: false
+
+run:
+  device: mps               # Change to 'mps' if testing on Mac, or 'cpu'
+  dry_run: false
+  strict: true
+  output_dir: outputs/local_test_run
+
+mano:
+  model_dir: null
+
+stages:
+  - family: hands
+    name: mediapipe
+    enabled: true
+    params:
+      model_path: assets/models/hand_landmarker.task # Assumes downloaded
+  - { family: hands, name: smoothing, params: { method: oneeuro } }
+
+  - family: detection
+    name: grounding_dino
+    enabled: true
+    params:
+      classes: ["plate", "knife", "pan", "bowl", "object", "hand"] # Manual
+      box_threshold: 0.40
+      text_threshold: 0.45
+
+  - family: segmentation
+    name: sam2
+    enabled: true
+    params:
+      checkpoint: assets/models/sam2.1_hiera_large.pt # Assumes downloaded
+
+  - include: configs/export/json.yaml
+  - include: configs/export/coco.yaml
+  - { family: viz, name: overlay }
