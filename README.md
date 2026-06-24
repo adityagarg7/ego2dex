@@ -98,6 +98,36 @@ A live GoPro run (needs GPU + weights):
 ```bash
 ego2dex run -c configs/pipeline/default.yaml -i my_clip.mp4 -o outputs/run
 ```
+```
+
+## 🚀 Easy Steps Before Jumping to Real Videos
+
+Before you process your real, full-length egocentric videos (like those from a GoPro), you must do a little bit of preparation so the AI knows what to look for. Because these models are heavy, we use Google Colab to avoid crashing your computer.
+
+### Step 1: Update the Text Prompts (Manual Classes)
+Grounding DINO works by searching your video for specific words you type. Right now, the configuration looks for `["plate", "pan", "knife"]`. 
+* **Action:** Open `configs/pipeline/colab.yaml` in your editor. Locate the `grounding_dino` section and change the `classes` text prompts to match the objects in your specific video (e.g., `["wrench", "screwdriver", "engine"]`). If you do not change these, the AI will not find your objects!
+
+### Step 2: Adjust the `box_threshold` (AI Sensitivity)
+Grounding DINO uses a float value called `box_threshold` to determine how confident it needs to be before it draws a bounding box around an object.
+* **What the threshold does:** If it is too low (e.g., `0.1`), the AI might hallucinate and tag a random shadow as a "screwdriver". If it is too high (e.g., `0.9`), it might miss the screwdriver entirely.
+* **Action:** Open `configs/pipeline/colab.yaml`, locate the `grounding_dino` stage, and find `box_threshold: 0.35`. If you notice the AI is hallucinating false objects, increase this float to `0.5` or higher.
+
+### Step 3: Upload Videos to Google Drive
+Uploading large `.mp4` videos directly to Colab's temporary storage can be very slow, and the storage deletes itself when you close the tab.
+* **Action:** Upload your real videos directly to your Google Drive. When you open the Colab notebook, mount your Drive, and change the `--input` path in the execution command to point to your video file on Drive (e.g., `/content/drive/MyDrive/video.mp4`).
+
+### Step 4: Beware of Long Videos
+* **Action:** If your video is very long (e.g., greater than 2 minutes), processing it all at once might overload and crash the Colab GPU's memory. It is highly recommended to cut your video into smaller 30-second clips before running the pipeline, or strictly lower the `sample_fps` in your config file.
+
+> 📖 **Full Guide:** Read the step-by-step guide in [`docs/colab_testing_guide.md`](docs/colab_testing_guide.md) and our testing summary in [`docs/testing_phase_summary.md`](docs/testing_phase_summary.md).
+
+---
+
+### 🛠️ Core AI Tools Used in this Pipeline
+* **[MediaPipe (v0.10+)](https://github.com/google-ai-edge/mediapipe):** Used for lightweight, robust 3D hand tracking without restrictive licenses.
+* **[Grounding DINO](https://github.com/IDEA-Research/GroundingDINO):** Used for zero-shot open-vocabulary object detection (finding objects based entirely on text prompts).
+* **[SAM 2 (Segment Anything 2)](https://github.com/facebookresearch/sam2):** Used immediately after Grounding DINO to generate pixel-perfect segmentation masks around the detected objects.
 
 ## Two pretraining pathways
 
